@@ -1,0 +1,183 @@
+{
+  "name": "resume builder",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "62fed0d1-1a63-4f89-9525-e40ebff3a350",
+              "name": "name",
+              "value": "anusha",
+              "type": "string"
+            },
+            {
+              "id": "3b05ab09-6df4-4e9f-8eae-4e2ca90eff6e",
+              "name": "education",
+              "value": "engineering",
+              "type": "string"
+            },
+            {
+              "id": "2bf97647-cb25-4bb9-9683-62503baac404",
+              "name": "dept",
+              "value": "ise",
+              "type": "string"
+            },
+            {
+              "id": "416c8cd3-8bcc-46e9-a7d8-f3a0dcad8a89",
+              "name": "skills",
+              "value": "html,css,java script,sql",
+              "type": "string"
+            },
+            {
+              "id": "e61e7001-fe0f-4496-8d3a-ef31d3217281",
+              "name": "yop",
+              "value": "2026",
+              "type": "string"
+            },
+            {
+              "id": "9a889412-7a1a-4259-aff2-b27127c2b80f",
+              "name": "experience",
+              "value": "intern",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        48,
+        0
+      ],
+      "id": "64d16a81-a1a5-4cdc-a067-50bda11e3247",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "html": "<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"UTF-8\" />\n  <title>Resume</title>\n</head>\n<body>\n  <div class=\"container\">\n    <pre>{{ $json.html }}</pre>\n  </div>\n</body>\n</html>\n\n<style>\n.container {\n  background-color: #ffffff;\n  padding: 16px;\n  border-radius: 8px;\n}\n\npre {\n  white-space: pre-wrap;\n  font-family: Arial, sans-serif;\n  font-size: 14px;\n}\n</style>"
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        720,
+        0
+      ],
+      "id": "0c8374c0-4e07-4141-81cb-1e9d8dae6f60",
+      "name": "HTML"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{$json.html}}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        944,
+        0
+      ],
+      "id": "08a447d9-da39-4979-8325-1fc62a7a53a1",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "path": "=5ef13436-3918-4f53-ae88-426d98bd5447",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -176,
+        0
+      ],
+      "id": "03d77a6c-bd9f-4758-9ed1-add279e6fabc",
+      "name": "Webhook",
+      "webhookId": "34e43501-3df3-4b4b-a37d-69de44ca3329"
+    },
+    {
+      "parameters": {
+        "jsCode": "const skills = ($json.skills || \"\").split(\",\");\n\nlet html = \"\";\nhtml += \"<!DOCTYPE html>\";\nhtml += \"<html>\";\nhtml += \"<head>\";\nhtml += \"<style>\";\nhtml += \"body{font-family:Arial;background:#f4f6f8;margin:0;padding:0;}\";\nhtml += \".container{max-width:800px;margin:40px auto;background:white;padding:30px;border-radius:10px;}\";\nhtml += \"h1{color:#2c3e50;}\";\nhtml += \"h2{color:#3498db;border-bottom:2px solid #3498db;}\";\nhtml += \".tag{background:#3498db;color:white;padding:5px 10px;margin:3px;display:inline-block;border-radius:5px;}\";\nhtml += \"</style></head><body><div class='container'>\";\n\nhtml += \"<h1>\" + ($json.name || \"\") + \"</h1>\";\nhtml += \"<p>\" + ($json.education || \"\") + \" in \" + ($json.dept || \"\") + \"</p>\";\n\nhtml += \"<h2>Skills</h2>\";\nskills.forEach(s => {\n  html += \"<span class='tag'>\" + s.trim() + \"</span>\";\n});\n\nhtml += \"<h2>Experience</h2>\";\nhtml += \"<p>\" + ($json.experience || \"\") + \"</p>\";\n\nhtml += \"</div></body></html>\";\n\nreturn [{ json: { html } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        0
+      ],
+      "id": "5353486e-24fe-47b5-b117-affa9086c11a",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c2e24991-f1fd-47d1-8d84-d4652c220b83",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "23c89eb60006d9d4795a47221ac5fc9089b1ee7fca02aaad94155f53d79eb953"
+  },
+  "id": "rn8ppObKdp3FjOyx",
+  "tags": []
+}
